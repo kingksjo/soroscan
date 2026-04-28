@@ -46,6 +46,18 @@ class RequestIdMiddleware:
         return response
 
 
+class PlatformVersionMiddleware:
+    """Attach platform version metadata to every response."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        response["X-SoroScan-Version"] = getattr(settings, "SOFTWARE_VERSION", "unknown")
+        return response
+
+
 class ReverseProxyFixedIPMiddleware:
     """
     Middleware to handle rate limiting behind a reverse proxy.
@@ -90,13 +102,17 @@ class SlowQueryMiddleware:
             finally:
                 duration_ms = (time.monotonic() - start) * 1000
                 if duration_ms >= threshold:
+                    # Convert params to a serializable format or stringify it to avoid log formatting errors
+                    safe_params = str(params)[:1000] if params else ""
                     slow_query_logger.warning(
-                        "Slow query (%dms): %s",
+                        "Slow query (%dms): %s\nParams: %s",
                         int(duration_ms),
                         (sql or "")[:1000],
+                        safe_params,
                         extra={
                             "duration_ms": round(duration_ms, 2),
                             "sql": (sql or "")[:1000],
+                            "params": safe_params,
                             "request_path": request.path,
                         },
                     )
