@@ -62,7 +62,6 @@ describe("Modal Component", () => {
     fireEvent.click(screen.getByTestId("trigger"));
 
     const modalContent = screen.getByRole("dialog");
-    const closeBtn = screen.getByText("Close").closest("button");
     const insideBtn = screen.getByTestId("inside-btn");
 
     await waitFor(() => {
