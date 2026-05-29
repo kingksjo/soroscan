@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIClient
 from django.test import override_settings
-from django.urls import reverse
+
 from rest_framework import status
 from django.contrib.auth.models import User
 from soroscan.ingest.models import TrackedContract
