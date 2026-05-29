@@ -112,6 +112,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "soroscan.middleware.RequestIdMiddleware",
     "soroscan.middleware.PlatformVersionMiddleware",
+    "soroscan.perf_logger.SlowQueryLoggerMiddleware",
     "soroscan.middleware.SlowQueryMiddleware",
     "soroscan.middleware.ApiDeprecationMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -433,6 +434,7 @@ LOGGING = {
 # Slow-query logging (Issue: perf monitoring)
 # ---------------------------------------------------------------------------
 LOGGING_SLOW_QUERIES_THRESHOLD_MS = env.int("SLOW_QUERY_THRESHOLD_MS", default=100)
+DATABASE_SLOW_QUERY_THRESHOLD = env.float("DATABASE_SLOW_QUERY_THRESHOLD", default=1.0)
 
 # Ensure log directories exist before configuring handlers
 _LOG_DIR = BASE_DIR / "logs"
@@ -457,6 +459,11 @@ LOGGING["loggers"]["soroscan.slow_queries"] = {
 LOGGING["loggers"]["soroscan.migrate"] = {
     "handlers": ["console"],
     "level": "INFO",
+    "propagate": False,
+}
+LOGGING["loggers"]["django.performance.database"] = {
+    "handlers": ["console"],
+    "level": "WARNING",
     "propagate": False,
 }
 
