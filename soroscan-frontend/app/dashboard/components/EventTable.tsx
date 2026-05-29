@@ -76,7 +76,7 @@ export function EventTable({ events, loading, onEventClick, hasActiveFilters, on
                       No events match your criteria
                     </h3>
                     <p style={{ margin: 0, color: "var(--text-secondary)", maxWidth: "400px", lineHeight: 1.5 }}>
-                      We couldn't find any events matching your current search and filter settings. Try adjusting them or clear all filters to see more results.
+                      We couldn&apos;t find any events matching your current search and filter settings. Try adjusting them or clear all filters to see more results.
                     </p>
                     <button
                       type="button"
