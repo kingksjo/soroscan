@@ -107,6 +107,9 @@ class TrackedContractViewSet(viewsets.ModelViewSet):
     search_fields = ["name", "alias", "contract_id"]
     ordering_fields = ["created_at", "name", "alias"]
     ordering = ["-created_at"]
+    action_throttle_scopes = {
+        "stats": "contract_stats",
+    }
 
     @staticmethod
     def _collect_warnings(items: list[dict]) -> list[dict[str, str]]:
@@ -319,6 +322,9 @@ class ContractEventViewSet(viewsets.ReadOnlyModelViewSet):
     ]
     ordering_fields = ["timestamp", "ledger"]
     ordering = ["-timestamp"]
+    action_throttle_scopes = {
+        "search": "events_search",
+    }
 
     def get_queryset(self):
         return ContractEvent.objects.select_related("contract").all()

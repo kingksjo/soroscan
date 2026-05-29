@@ -191,10 +191,17 @@ CACHES = {
 QUERY_CACHE_TTL_SECONDS = env.int("QUERY_CACHE_TTL_SECONDS", default=60)
 
 # Rate limiting configuration (via environment variables)
+# To add a new endpoint rate limit:
+# 1. Define a new environment variable here (e.g. ENDPOINT_RATE_LIMIT_MYFEATURE).
+# 2. Add it to the DEFAULT_THROTTLE_RATES dictionary below with a custom scope name.
+# 3. Apply the `DynamicEndpointThrottle` to your ViewSet and map the action in `action_throttle_scopes`,
+#    or set `throttle_scope = "my_scope"` on an APIView.
 RATE_LIMIT_ANON = env("RATE_LIMIT_ANON", default="60/minute")
 RATE_LIMIT_USER = env("RATE_LIMIT_USER", default="300/minute")
 RATE_LIMIT_INGEST = env("RATE_LIMIT_INGEST", default="10/minute")
 RATE_LIMIT_GRAPHQL = env("RATE_LIMIT_GRAPHQL", default="60/minute")
+ENDPOINT_RATE_LIMIT_SEARCH = env("ENDPOINT_RATE_LIMIT_SEARCH", default="30/minute")
+ENDPOINT_RATE_LIMIT_STATS = env("ENDPOINT_RATE_LIMIT_STATS", default="100/minute")
 
 # REST Framework
 REST_FRAMEWORK = {
@@ -215,6 +222,7 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": [
+        "soroscan.throttles.DynamicEndpointThrottle",
         "soroscan.throttles.APIKeyThrottle",
         "rest_framework.throttling.AnonRateThrottle",
         "rest_framework.throttling.UserRateThrottle",
@@ -224,6 +232,8 @@ REST_FRAMEWORK = {
         "user": RATE_LIMIT_USER,
         "ingest": RATE_LIMIT_INGEST,
         "graphql": RATE_LIMIT_GRAPHQL,
+        "events_search": ENDPOINT_RATE_LIMIT_SEARCH,
+        "contract_stats": ENDPOINT_RATE_LIMIT_STATS,
     },
 }
 
